@@ -27,7 +27,7 @@ vercel dev
 ## 기능
 
 - **추첨기**: TV 방송 스타일 6/45 추첨 애니메이션
-- **사주 챗봇**: 성별·생년월일 입력 → Gemini 2.5 Flash가 사주 기반 번호 추천 및 근거 설명
+- **사주 챗봇**: 성별·생년월일·띠 입력 → Gemini 2.5 Flash가 사주·띠 기반 번호 추천 및 근거 설명
 - **추첨기에 적용**: AI 추천 번호를 당첨번호판에 바로 반영
 - HP 디자인 시스템 (`DESIGN.md`) UI
 
@@ -35,7 +35,7 @@ vercel dev
 
 | Method | Path | Body |
 |--------|------|------|
-| POST | `/api/saju-recommend` | `{ "gender": "male"\|"female", "birthDate": "YYYY-MM-DD", "zodiac": "leo" }` |
+| POST | `/api/saju-recommend` | `{ "gender": "male"\|"female", "birthDate": "YYYY-MM-DD", "tti": "dragon" }` |
 
 ## 저장소
 
