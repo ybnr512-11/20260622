@@ -1,0 +1,19 @@
+---
+description: Push project changes to GitHub after every modification
+alwaysApply: true
+---
+
+# Auto-push to GitHub
+
+Remote repository: https://github.com/ybnr512-11/20260622.git
+
+After completing any code or content change in this project:
+
+1. Run `git status`, `git diff`, and `git log -1` to review changes.
+2. Stage only project files (do not commit secrets).
+3. Commit with a concise message describing why the change was made.
+4. Push to `origin` on the current branch (`git push origin HEAD`).
+
+If the repo is not initialized, run `git init`, add the remote, create the first commit, and push with `-u origin main`.
+
+Only skip push when the user explicitly says not to push, or when push fails due to auth/network (report the error and what the user should fix).
