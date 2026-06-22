@@ -1,20 +1,22 @@
 module.exports = async function handler(req, res) {
   const MODEL = "gemini-2.5-flash";
 
-  const SYSTEM_PROMPT = `당신은 사주(四柱)와 오행 이론에 능통한 로또 번호 상담 챗봇입니다.
-사용자의 성별과 생년월일을 바탕으로 사주를 간략히 해석하고, 로또 6/45 규칙에 맞는 번호 6개와 보너스 1개를 추천합니다.
+  const SYSTEM_PROMPT = `당신은 사주(四柱)와 오행 이론, 서양 별자리 점성술에 능통한 로또 번호 상담 챗봇입니다.
+사용자의 성별, 생년월일, 별자리를 바탕으로 사주와 별자리를 함께 해석하고, 로또 6/45 규칙에 맞는 번호 6개와 보너스 1개를 추천합니다.
 
 규칙:
 - 추천 번호는 1~45 사이 정수, 중복 없음
 - main 6개는 오름차순, bonus는 main과 겹치지 않음
-- 사주의 일간(日干), 오행(木火土金水), 십성, 용신·희신 개념을 근거로 각 번호 선택 이유를 설명
-- numberReasons에 6개 번호 + 보너스 번호 각각의 reason 포함
+- 사주(일간, 오행, 십성, 용신·희신)와 별자리(원소, 수호성, 행운 숫자)를 모두 근거로 설명
+- numberReasons에 6개 번호 + 보너스 번호 각각의 reason 포함 (사주·별자리 중 하나 이상 언급)
+- zodiacOverview: 선택한 별자리의 성향과 이번 추천과의 연결
 - summary는 한 줄 요약
 - entertainmentNotice: "본 추천은 재미·참고용이며 실제 당첨을 보장하지 않습니다." 포함
 
 반드시 아래 JSON 형식만 출력하세요:
 {
   "sajuOverview": "사주 개요",
+  "zodiacOverview": "별자리 해석",
   "numbers": [6개 오름차순],
   "bonus": 보너스번호,
   "numberReasons": [{ "number": 1, "reason": "근거" }],
@@ -22,13 +24,36 @@ module.exports = async function handler(req, res) {
   "entertainmentNotice": "면책 문구"
 }`;
 
+  const ZODIAC_IDS = [
+    "aries", "taurus", "gemini", "cancer", "leo", "virgo",
+    "libra", "scorpio", "sagittarius", "capricorn", "aquarius", "pisces",
+  ];
+
+  const ZODIAC_LABELS = {
+    aries: "양자리",
+    taurus: "황소자리",
+    gemini: "쌍둥이자리",
+    cancer: "게자리",
+    leo: "사자자리",
+    virgo: "처녀자리",
+    libra: "천칭자리",
+    scorpio: "전갈자리",
+    sagittarius: "사수자리",
+    capricorn: "염소자리",
+    aquarius: "물병자리",
+    pisces: "물고기자리",
+  };
+
   function validateInput(body) {
-    const { gender, birthDate } = body || {};
+    const { gender, birthDate, zodiac } = body || {};
     if (!gender || !["male", "female"].includes(gender)) {
       return "성별을 선택해 주세요.";
     }
     if (!birthDate || !/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) {
       return "생년월일은 YYYY-MM-DD 형식이어야 합니다.";
+    }
+    if (!zodiac || !ZODIAC_IDS.includes(zodiac)) {
+      return "별자리를 선택해 주세요.";
     }
     const date = new Date(birthDate + "T00:00:00");
     if (Number.isNaN(date.getTime())) {
@@ -124,13 +149,15 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: validationError });
   }
 
-  const { gender, birthDate } = body;
+  const { gender, birthDate, zodiac } = body;
   const genderLabel = gender === "male" ? "남성" : "여성";
+  const zodiacLabel = ZODIAC_LABELS[zodiac] || zodiac;
 
   const userPrompt = `성별: ${genderLabel}
 생년월일: ${birthDate}
+별자리: ${zodiacLabel} (${zodiac})
 
-위 정보를 바탕으로 사주에 맞는 로또 6/45 번호(6개+보너스 1개)를 추천하고, 사주 근거를 설명해 주세요.`;
+위 정보를 바탕으로 사주와 별자리를 함께 고려해 로또 6/45 번호(6개+보너스 1개)를 추천하고, 근거를 설명해 주세요.`;
 
   try {
     const geminiRes = await fetch(
@@ -190,6 +217,8 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({
       sajuOverview: parsed.sajuOverview || "",
+      zodiacOverview: parsed.zodiacOverview || "",
+      zodiacLabel,
       numbers: parsed.numbers,
       bonus: parsed.bonus,
       numberReasons: parsed.numberReasons || [],

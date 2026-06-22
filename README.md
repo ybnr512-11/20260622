@@ -35,7 +35,7 @@ vercel dev
 
 | Method | Path | Body |
 |--------|------|------|
-| POST | `/api/saju-recommend` | `{ "gender": "male"\|"female", "birthDate": "YYYY-MM-DD" }` |
+| POST | `/api/saju-recommend` | `{ "gender": "male"\|"female", "birthDate": "YYYY-MM-DD", "zodiac": "leo" }` |
 
 ## 저장소
 
