@@ -1576,7 +1576,7 @@
         loadingBubble.remove();
 
         if (!res.ok) {
-          appendChatBubble(data.error || "추천 요청에 실패했습니다.", "bot error");
+          appendChatBubble(data.error || data.detail || "추천 요청에 실패했습니다.", "bot error");
           lastSajuResult = null;
           return;
         }
@@ -1584,10 +1584,10 @@
         lastSajuResult = data;
         appendChatHtml(renderSajuResult(data), "bot");
         applySajuBtn.disabled = false;
-      } catch {
+      } catch (err) {
         loadingBubble.remove();
         appendChatBubble(
-          "서버에 연결할 수 없습니다. Vercel에 배포했는지, GEMINI_API_KEY가 설정되었는지 확인해 주세요.",
+          `서버에 연결할 수 없습니다. Vercel 배포 URL에서 접속했는지 확인해 주세요. (${err.message || "network error"})`,
           "bot error"
         );
         lastSajuResult = null;
