@@ -90,6 +90,22 @@
       color: var(--charcoal);
     }
 
+    .nav-links {
+      display: flex;
+      gap: var(--spacing-md);
+    }
+
+    .nav-links a {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
     /* hero with chevrons */
     .hero-wrap {
       position: relative;
@@ -755,6 +771,176 @@
       font-weight: 400;
     }
 
+    /* saju chatbot */
+    .chat-section {
+      background: var(--cloud);
+      border-radius: var(--radius-card);
+      padding: var(--spacing-xl);
+      margin-bottom: var(--spacing-xl);
+      border: 1px solid var(--hairline);
+    }
+
+    .chat-header h2 {
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 1;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .chat-header p {
+      font-size: 14px;
+      color: var(--charcoal);
+      line-height: 1.5;
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .chat-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .chat-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .chat-field label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .chat-field input,
+    .chat-field select {
+      height: 44px;
+      border: 1px solid var(--steel);
+      border-radius: var(--radius-btn);
+      padding: 0 var(--spacing-md);
+      font-family: inherit;
+      font-size: 16px;
+      background: var(--canvas);
+      color: var(--ink);
+    }
+
+    .chat-field input:focus,
+    .chat-field select:focus {
+      outline: none;
+      border-color: var(--ink);
+    }
+
+    .chat-submit-wrap {
+      grid-column: 1 / -1;
+    }
+
+    .chat-submit-wrap button {
+      width: 100%;
+    }
+
+    .chat-messages {
+      background: var(--canvas);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-md);
+      min-height: 200px;
+      max-height: 420px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-sm);
+    }
+
+    .chat-empty {
+      text-align: center;
+      color: var(--graphite);
+      font-size: 14px;
+      padding: var(--spacing-xl) var(--spacing-md);
+    }
+
+    .chat-bubble {
+      max-width: 92%;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--radius-lg);
+      font-size: 15px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .chat-bubble.user {
+      align-self: flex-end;
+      background: var(--primary-soft);
+      color: var(--ink);
+    }
+
+    .chat-bubble.bot {
+      align-self: flex-start;
+      background: var(--cloud);
+      border: 1px solid var(--hairline);
+    }
+
+    .chat-bubble.loading {
+      color: var(--graphite);
+      font-style: italic;
+    }
+
+    .chat-bubble.error {
+      background: #fdecea;
+      border: 1px solid #f5c2c0;
+      color: #b3262b;
+    }
+
+    .chat-numbers {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: var(--spacing-sm) 0;
+    }
+
+    .chat-numbers .mini-ball {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--on-primary);
+    }
+
+    .chat-numbers .mini-ball.yellow { background: #f9a825; }
+    .chat-numbers .mini-ball.blue   { background: #1565c0; }
+    .chat-numbers .mini-ball.red    { background: #c62828; }
+    .chat-numbers .mini-ball.gray   { background: #616161; }
+    .chat-numbers .mini-ball.green  { background: #2e7d32; }
+
+    .chat-reason-list {
+      margin-top: var(--spacing-sm);
+      padding-left: 1.1rem;
+    }
+
+    .chat-reason-list li {
+      margin-bottom: 6px;
+    }
+
+    .chat-disclaimer {
+      margin-top: var(--spacing-sm);
+      font-size: 12px;
+      color: var(--graphite);
+    }
+
+    .chat-actions {
+      margin-top: var(--spacing-md);
+      display: flex;
+      gap: var(--spacing-sm);
+    }
+
+    .chat-actions button {
+      flex: 1;
+    }
+
     /* footer-dark */
     .footer-dark {
       background: var(--ink);
@@ -819,6 +1005,10 @@
         flex-direction: column;
       }
 
+      .chat-form {
+        grid-template-columns: 1fr;
+      }
+
       .footer-dark {
         padding: 48px var(--spacing-md);
       }
@@ -838,7 +1028,10 @@
 
   <nav class="nav-bar">
     <div class="nav-logo">Lotto <span>Picker</span></div>
-    <div class="nav-meta">1–45 · 6 + 보너스</div>
+    <div class="nav-links">
+      <a href="#draw">추첨</a>
+      <a href="#saju-chat">사주 추천</a>
+    </div>
   </nav>
 
   <div class="hero-wrap">
@@ -861,7 +1054,7 @@
   </div>
 
   <main>
-    <p class="section-label">Draw</p>
+    <p class="section-label" id="draw">Draw</p>
 
     <section class="draw-stage" aria-live="polite">
       <div class="draw-status" id="drawStatus">추첨 준비</div>
@@ -927,6 +1120,42 @@
         <button class="history-clear" id="clearHistory">전체 삭제</button>
       </div>
       <ul class="history-list" id="historyList"></ul>
+    </section>
+
+    <p class="section-label" id="saju-chat">Saju Chat</p>
+
+    <section class="chat-section" aria-labelledby="saju-chat">
+      <div class="chat-header">
+        <h2>사주 로또 상담</h2>
+        <p>성별과 생년월일을 입력하면 Gemini AI가 사주를 바탕으로 번호를 추천하고, 선택 이유를 설명합니다.</p>
+      </div>
+
+      <form class="chat-form" id="sajuForm">
+        <div class="chat-field">
+          <label for="sajuGender">성별</label>
+          <select id="sajuGender" required>
+            <option value="">선택</option>
+            <option value="male">남성</option>
+            <option value="female">여성</option>
+          </select>
+        </div>
+        <div class="chat-field">
+          <label for="sajuBirth">생년월일</label>
+          <input type="date" id="sajuBirth" required max="2099-12-31">
+        </div>
+        <div class="chat-submit-wrap">
+          <button type="submit" class="btn-primary" id="sajuSubmitBtn">사주 번호 추천 받기</button>
+        </div>
+      </form>
+
+      <div class="chat-messages" id="chatMessages" aria-live="polite">
+        <div class="chat-empty" id="chatEmpty">성별과 생년월일을 입력한 뒤 추천을 요청해 주세요.</div>
+      </div>
+
+      <div class="chat-actions">
+        <button type="button" class="btn-outline" id="applySajuBtn" disabled>추첨기에 번호 적용</button>
+        <button type="button" class="btn-outline" id="clearChatBtn">대화 지우기</button>
+      </div>
     </section>
   </main>
 
@@ -1232,6 +1461,155 @@
 
     clearHistoryBtn.addEventListener("click", () => {
       historyListEl.innerHTML = "";
+    });
+
+    // --- Saju chatbot ---
+    const sajuForm = document.getElementById("sajuForm");
+    const sajuGenderEl = document.getElementById("sajuGender");
+    const sajuBirthEl = document.getElementById("sajuBirth");
+    const sajuSubmitBtn = document.getElementById("sajuSubmitBtn");
+    const chatMessagesEl = document.getElementById("chatMessages");
+    const chatEmptyEl = document.getElementById("chatEmpty");
+    const applySajuBtn = document.getElementById("applySajuBtn");
+    const clearChatBtn = document.getElementById("clearChatBtn");
+
+    let lastSajuResult = null;
+    let chatLoading = false;
+
+    sajuBirthEl.max = new Date().toISOString().slice(0, 10);
+
+    function hideChatEmpty() {
+      if (chatEmptyEl) chatEmptyEl.style.display = "none";
+    }
+
+    function appendChatBubble(text, type = "bot") {
+      hideChatEmpty();
+      const bubble = document.createElement("div");
+      bubble.className = `chat-bubble ${type}`;
+      bubble.textContent = text;
+      chatMessagesEl.appendChild(bubble);
+      chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+      return bubble;
+    }
+
+    function appendChatHtml(html, type = "bot") {
+      hideChatEmpty();
+      const bubble = document.createElement("div");
+      bubble.className = `chat-bubble ${type}`;
+      bubble.innerHTML = html;
+      chatMessagesEl.appendChild(bubble);
+      chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+      return bubble;
+    }
+
+    function renderSajuResult(data) {
+      const ballsHtml = data.numbers
+        .map(n => `<span class="mini-ball ${getBallColor(n)}">${n}</span>`)
+        .join("");
+      const bonusHtml = `<span class="mini-ball ${getBallColor(data.bonus)}">${data.bonus}</span>`;
+
+      let reasonsHtml = "";
+      if (Array.isArray(data.numberReasons) && data.numberReasons.length) {
+        reasonsHtml =
+          "<ul class=\"chat-reason-list\">" +
+          data.numberReasons
+            .map(r => `<li><strong>${r.number}번</strong>: ${r.reason || ""}</li>`)
+            .join("") +
+          "</ul>";
+      } else if (data.explanation) {
+        reasonsHtml = `<p>${data.explanation.replace(/\n/g, "<br>")}</p>`;
+      }
+
+      return (
+        `<strong>추천 번호</strong>` +
+        `<div class="chat-numbers">${ballsHtml}<span style="color:var(--graphite);margin:0 4px;">+</span>${bonusHtml}</div>` +
+        (data.sajuOverview ? `<p><strong>사주 개요</strong><br>${data.sajuOverview}</p>` : "") +
+        reasonsHtml +
+        (data.summary ? `<p><strong>요약</strong>: ${data.summary}</p>` : "") +
+        `<p class="chat-disclaimer">${data.entertainmentNotice || "본 추천은 재미·참고용이며 실제 당첨을 보장하지 않습니다."}</p>`
+      );
+    }
+
+    function applySajuToDrawBoard(result) {
+      stopMixing();
+      setStatus("사주 추천 번호", false);
+      getSlots().forEach((slot, i) => {
+        const ball = slot.querySelector(".ball");
+        const num = result.numbers[i];
+        ball.className = `ball visible ${getBallColor(num)}`;
+        ball.textContent = num;
+        slot.querySelector(".slot-ring").style.opacity = "0";
+      });
+      if (includeBonusEl.checked) {
+        bonusBallEl.className = `ball visible ${getBallColor(result.bonus)}`;
+        bonusBallEl.textContent = result.bonus;
+        bonusSlotEl.querySelector(".slot-ring").style.opacity = "0";
+      }
+      addToHistory({ main: result.numbers, bonus: result.bonus });
+      document.getElementById("draw").scrollIntoView({ behavior: "smooth" });
+    }
+
+    sajuForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (chatLoading) return;
+
+      const gender = sajuGenderEl.value;
+      const birthDate = sajuBirthEl.value;
+      if (!gender || !birthDate) return;
+
+      const genderLabel = gender === "male" ? "남성" : "여성";
+      appendChatBubble(`${genderLabel}, 생년월일 ${birthDate}`, "user");
+
+      chatLoading = true;
+      sajuSubmitBtn.disabled = true;
+      applySajuBtn.disabled = true;
+      const loadingBubble = appendChatBubble("사주를 분석하고 번호를 추천하는 중…", "bot loading");
+
+      try {
+        const res = await fetch("/api/saju-recommend", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ gender, birthDate }),
+        });
+
+        const data = await res.json();
+        loadingBubble.remove();
+
+        if (!res.ok) {
+          appendChatBubble(data.error || "추천 요청에 실패했습니다.", "bot error");
+          lastSajuResult = null;
+          return;
+        }
+
+        lastSajuResult = data;
+        appendChatHtml(renderSajuResult(data), "bot");
+        applySajuBtn.disabled = false;
+      } catch {
+        loadingBubble.remove();
+        appendChatBubble(
+          "서버에 연결할 수 없습니다. Vercel에 배포했는지, GEMINI_API_KEY가 설정되었는지 확인해 주세요.",
+          "bot error"
+        );
+        lastSajuResult = null;
+      } finally {
+        chatLoading = false;
+        sajuSubmitBtn.disabled = false;
+      }
+    });
+
+    applySajuBtn.addEventListener("click", () => {
+      if (lastSajuResult) applySajuToDrawBoard(lastSajuResult);
+    });
+
+    clearChatBtn.addEventListener("click", () => {
+      chatMessagesEl.innerHTML = "";
+      const empty = document.createElement("div");
+      empty.className = "chat-empty";
+      empty.id = "chatEmpty";
+      empty.textContent = "성별과 생년월일을 입력한 뒤 추천을 요청해 주세요.";
+      chatMessagesEl.appendChild(empty);
+      lastSajuResult = null;
+      applySajuBtn.disabled = true;
     });
   </script>
 </body>
