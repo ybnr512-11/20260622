@@ -219,6 +219,7 @@ module.exports = async function handler(req, res) {
       sajuOverview: parsed.sajuOverview || "",
       ttiOverview: parsed.ttiOverview || "",
       ttiLabel,
+      tti,
       numbers: parsed.numbers,
       bonus: parsed.bonus,
       numberReasons: parsed.numberReasons || [],

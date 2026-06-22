@@ -845,7 +845,7 @@
       border-radius: var(--radius-lg);
       padding: var(--spacing-md);
       min-height: 200px;
-      max-height: 420px;
+      max-height: 560px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -880,6 +880,14 @@
       border: 1px solid var(--hairline);
     }
 
+    .chat-bubble.bot.saju-card-wrap {
+      max-width: 100%;
+      width: 100%;
+      padding: 0;
+      background: transparent;
+      border: none;
+    }
+
     .chat-bubble.loading {
       color: var(--graphite);
       font-style: italic;
@@ -894,21 +902,238 @@
     .chat-numbers {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      margin: var(--spacing-sm) 0;
+      align-items: center;
+      gap: 8px;
     }
 
     .chat-numbers .mini-ball {
-      width: 36px;
-      height: 36px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--on-primary);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .chat-numbers .bonus-tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 0.05em;
+      margin: 0 2px;
+    }
+
+    .chat-numbers .mini-ball.bonus-ball {
+      box-shadow: 0 0 0 2px var(--primary-soft), 0 2px 8px rgba(2,74,216,0.25);
+    }
+
+    /* saju result card */
+    .saju-result-card {
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      border: 1px solid var(--hairline);
+      box-shadow: var(--shadow-soft);
+      background: var(--canvas);
+    }
+
+    .saju-hero {
+      padding: var(--spacing-xl);
+      color: var(--on-ink);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .saju-hero::after {
+      content: attr(data-emoji);
+      position: absolute;
+      right: -8px;
+      bottom: -20px;
+      font-size: 96px;
+      opacity: 0.18;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .saju-hero-emoji {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+
+    .saju-hero-text h3 {
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    .saju-hero-text p {
+      font-size: 13px;
+      opacity: 0.92;
+      line-height: 1.4;
+    }
+
+    .saju-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .saju-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.2);
+      letter-spacing: 0.03em;
+    }
+
+    .saju-body {
+      padding: var(--spacing-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-sm);
+    }
+
+    .saju-panel {
+      background: var(--cloud);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-md);
+      border: 1px solid var(--hairline);
+    }
+
+    .saju-panel-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 10px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .saju-panel-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      background: var(--canvas);
+    }
+
+    .saju-panel p {
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--charcoal);
+    }
+
+    .saju-numbers-panel {
+      background: linear-gradient(180deg, var(--primary-soft) 0%, var(--canvas) 100%);
+      border-color: #b8d4fc;
+      text-align: center;
+    }
+
+    .saju-numbers-panel .saju-panel-title {
+      justify-content: center;
+    }
+
+    .saju-reason-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .saju-reason-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      background: var(--canvas);
+      border-radius: var(--radius-lg);
+      padding: 10px 12px;
+      border: 1px solid var(--hairline);
+    }
+
+    .saju-reason-item .mini-ball {
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 13px;
       font-weight: 700;
-      color: var(--on-primary);
+      color: #fff;
+      flex-shrink: 0;
     }
+
+    .saju-reason-item p {
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--charcoal);
+      margin: 0;
+    }
+
+    .saju-reason-item strong {
+      color: var(--ink);
+    }
+
+    .saju-summary {
+      background: var(--ink);
+      color: var(--on-ink);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-md);
+      font-size: 14px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .saju-summary-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      opacity: 0.7;
+      margin-bottom: 6px;
+    }
+
+    .saju-disclaimer {
+      font-size: 11px;
+      color: var(--graphite);
+      text-align: center;
+      padding: 4px 8px 8px;
+      line-height: 1.4;
+    }
+
+    .tti-rat    .saju-hero { background: linear-gradient(135deg, #5c6bc0, #3949ab); }
+    .tti-ox     .saju-hero { background: linear-gradient(135deg, #8d6e63, #5d4037); }
+    .tti-tiger  .saju-hero { background: linear-gradient(135deg, #ff8f00, #e65100); }
+    .tti-rabbit .saju-hero { background: linear-gradient(135deg, #f48fb1, #c2185b); }
+    .tti-dragon .saju-hero { background: linear-gradient(135deg, #ef5350, #b71c1c); }
+    .tti-snake  .saju-hero { background: linear-gradient(135deg, #66bb6a, #2e7d32); }
+    .tti-horse  .saju-hero { background: linear-gradient(135deg, #ffa726, #ef6c00); }
+    .tti-goat   .saju-hero { background: linear-gradient(135deg, #ce93d8, #8e24aa); }
+    .tti-monkey .saju-hero { background: linear-gradient(135deg, #ffca28, #f57f17); }
+    .tti-rooster .saju-hero { background: linear-gradient(135deg, #ef5350, #c62828); }
+    .tti-dog    .saju-hero { background: linear-gradient(135deg, #a1887f, #6d4c41); }
+    .tti-pig    .saju-hero { background: linear-gradient(135deg, #f06292, #ad1457); }
 
     .chat-numbers .mini-ball.yellow { background: #f9a825; }
     .chat-numbers .mini-ball.blue   { background: #1565c0; }
@@ -916,20 +1141,11 @@
     .chat-numbers .mini-ball.gray   { background: #616161; }
     .chat-numbers .mini-ball.green  { background: #2e7d32; }
 
-    .chat-reason-list {
-      margin-top: var(--spacing-sm);
-      padding-left: 1.1rem;
-    }
-
-    .chat-reason-list li {
-      margin-bottom: 6px;
-    }
-
-    .chat-disclaimer {
-      margin-top: var(--spacing-sm);
-      font-size: 12px;
-      color: var(--graphite);
-    }
+    .saju-reason-item .mini-ball.yellow { background: #f9a825; }
+    .saju-reason-item .mini-ball.blue   { background: #1565c0; }
+    .saju-reason-item .mini-ball.red    { background: #c62828; }
+    .saju-reason-item .mini-ball.gray   { background: #616161; }
+    .saju-reason-item .mini-ball.green  { background: #2e7d32; }
 
     .chat-actions {
       margin-top: var(--spacing-md);
@@ -1147,18 +1363,18 @@
           <label for="sajuTti">띠</label>
           <select id="sajuTti" required>
             <option value="">선택</option>
-            <option value="rat">쥐띠</option>
-            <option value="ox">소띠</option>
-            <option value="tiger">호랑이띠</option>
-            <option value="rabbit">토끼띠</option>
-            <option value="dragon">용띠</option>
-            <option value="snake">뱀띠</option>
-            <option value="horse">말띠</option>
-            <option value="goat">양띠</option>
-            <option value="monkey">원숭이띠</option>
-            <option value="rooster">닭띠</option>
-            <option value="dog">개띠</option>
-            <option value="pig">돼지띠</option>
+            <option value="rat">🐭 쥐띠</option>
+            <option value="ox">🐮 소띠</option>
+            <option value="tiger">🐯 호랑이띠</option>
+            <option value="rabbit">🐰 토끼띠</option>
+            <option value="dragon">🐲 용띠</option>
+            <option value="snake">🐍 뱀띠</option>
+            <option value="horse">🐴 말띠</option>
+            <option value="goat">🐏 양띠</option>
+            <option value="monkey">🐵 원숭이띠</option>
+            <option value="rooster">🐔 닭띠</option>
+            <option value="dog">🐶 개띠</option>
+            <option value="pig">🐷 돼지띠</option>
           </select>
         </div>
         <div class="chat-submit-wrap">
@@ -1511,6 +1727,21 @@
       pig: "돼지띠",
     };
 
+    const TTI_META = {
+      rat:     { emoji: "🐭", element: "水", hanja: "子" },
+      ox:      { emoji: "🐮", element: "土", hanja: "丑" },
+      tiger:   { emoji: "🐯", element: "木", hanja: "寅" },
+      rabbit:  { emoji: "🐰", element: "木", hanja: "卯" },
+      dragon:  { emoji: "🐲", element: "土", hanja: "辰" },
+      snake:   { emoji: "🐍", element: "火", hanja: "巳" },
+      horse:   { emoji: "🐴", element: "火", hanja: "午" },
+      goat:    { emoji: "🐏", element: "土", hanja: "未" },
+      monkey:  { emoji: "🐵", element: "金", hanja: "申" },
+      rooster: { emoji: "🐔", element: "金", hanja: "酉" },
+      dog:     { emoji: "🐶", element: "土", hanja: "戌" },
+      pig:     { emoji: "🐷", element: "水", hanja: "亥" },
+    };
+
     const TTI_ORDER = [
       "rat", "ox", "tiger", "rabbit", "dragon", "snake",
       "horse", "goat", "monkey", "rooster", "dog", "pig",
@@ -1549,42 +1780,97 @@
       return bubble;
     }
 
-    function appendChatHtml(html, type = "bot") {
+    function appendChatHtml(html, type = "bot", extraClass = "") {
       hideChatEmpty();
       const bubble = document.createElement("div");
-      bubble.className = `chat-bubble ${type}`;
+      bubble.className = `chat-bubble ${type}${extraClass ? " " + extraClass : ""}`;
       bubble.innerHTML = html;
       chatMessagesEl.appendChild(bubble);
       chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
       return bubble;
     }
 
-    function renderSajuResult(data) {
-      const ballsHtml = data.numbers
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function renderSajuResult(data, tti, meta) {
+      const ttiId = tti || data.tti || "dragon";
+      const info = TTI_META[ttiId] || TTI_META.dragon;
+      const label = data.ttiLabel || TTI_LABELS[ttiId] || ttiId;
+      const genderLabel = meta.gender === "male" ? "남성" : "여성";
+
+      const mainBalls = data.numbers
         .map(n => `<span class="mini-ball ${getBallColor(n)}">${n}</span>`)
         .join("");
-      const bonusHtml = `<span class="mini-ball ${getBallColor(data.bonus)}">${data.bonus}</span>`;
+      const bonusBall = `<span class="bonus-tag">BONUS</span><span class="mini-ball bonus-ball ${getBallColor(data.bonus)}">${data.bonus}</span>`;
 
       let reasonsHtml = "";
       if (Array.isArray(data.numberReasons) && data.numberReasons.length) {
         reasonsHtml =
-          "<ul class=\"chat-reason-list\">" +
+          `<div class="saju-panel">
+            <div class="saju-panel-title"><span class="saju-panel-icon">🔮</span>번호별 사주·띠 근거</div>
+            <div class="saju-reason-grid">` +
           data.numberReasons
-            .map(r => `<li><strong>${r.number}번</strong>: ${r.reason || ""}</li>`)
+            .map(r => {
+              const num = r.number;
+              const isBonus = num === data.bonus;
+              return `<div class="saju-reason-item">
+                <span class="mini-ball ${getBallColor(num)}">${num}</span>
+                <p><strong>${num}번${isBonus ? " (보너스)" : ""}</strong><br>${escapeHtml(r.reason)}</p>
+              </div>`;
+            })
             .join("") +
-          "</ul>";
+          `</div></div>`;
       } else if (data.explanation) {
-        reasonsHtml = `<p>${data.explanation.replace(/\n/g, "<br>")}</p>`;
+        reasonsHtml =
+          `<div class="saju-panel">
+            <div class="saju-panel-title"><span class="saju-panel-icon">🔮</span>추천 근거</div>
+            <p>${escapeHtml(data.explanation).replace(/\n/g, "<br>")}</p>
+          </div>`;
       }
 
       return (
-        `<strong>추천 번호</strong>` +
-        `<div class="chat-numbers">${ballsHtml}<span style="color:var(--graphite);margin:0 4px;">+</span>${bonusHtml}</div>` +
-        (data.sajuOverview ? `<p><strong>사주 개요</strong><br>${data.sajuOverview}</p>` : "") +
-        (data.ttiOverview ? `<p><strong>띠 (${data.ttiLabel || ""})</strong><br>${data.ttiOverview}</p>` : "") +
-        reasonsHtml +
-        (data.summary ? `<p><strong>요약</strong>: ${data.summary}</p>` : "") +
-        `<p class="chat-disclaimer">${data.entertainmentNotice || "본 추천은 재미·참고용이며 실제 당첨을 보장하지 않습니다."}</p>`
+        `<div class="saju-result-card tti-${ttiId}">
+          <div class="saju-hero" data-emoji="${info.emoji}">
+            <div class="saju-hero-emoji">${info.emoji}</div>
+            <div class="saju-hero-text">
+              <h3>${info.emoji} ${escapeHtml(label)} 행운 번호</h3>
+              <p>${escapeHtml(genderLabel)} · ${escapeHtml(meta.birthDate)}</p>
+              <div class="saju-tags">
+                <span class="saju-tag">${info.hanja} · ${info.element}行</span>
+                <span class="saju-tag">사주 × 띠 분석</span>
+              </div>
+            </div>
+          </div>
+          <div class="saju-body">
+            <div class="saju-panel saju-numbers-panel">
+              <div class="saju-panel-title"><span class="saju-panel-icon">🎱</span>추천 번호</div>
+              <div class="chat-numbers">${mainBalls}${bonusBall}</div>
+            </div>
+            ${data.sajuOverview ? `
+            <div class="saju-panel">
+              <div class="saju-panel-title"><span class="saju-panel-icon">☯️</span>사주 개요</div>
+              <p>${escapeHtml(data.sajuOverview)}</p>
+            </div>` : ""}
+            ${data.ttiOverview ? `
+            <div class="saju-panel">
+              <div class="saju-panel-title"><span class="saju-panel-icon">${info.emoji}</span>${escapeHtml(label)} 해석</div>
+              <p>${escapeHtml(data.ttiOverview)}</p>
+            </div>` : ""}
+            ${reasonsHtml}
+            ${data.summary ? `
+            <div class="saju-summary">
+              <div class="saju-summary-label">ONE LINE SUMMARY</div>
+              ${escapeHtml(data.summary)}
+            </div>` : ""}
+            <p class="saju-disclaimer">${escapeHtml(data.entertainmentNotice || "본 추천은 재미·참고용이며 실제 당첨을 보장하지 않습니다.")}</p>
+          </div>
+        </div>`
       );
     }
 
@@ -1618,12 +1904,14 @@
 
       const genderLabel = gender === "male" ? "남성" : "여성";
       const ttiLabel = TTI_LABELS[tti] || tti;
-      appendChatBubble(`${genderLabel}, ${birthDate}, ${ttiLabel}`, "user");
+      const ttiEmoji = (TTI_META[tti] || {}).emoji || "🎱";
+      appendChatBubble(`${ttiEmoji} ${genderLabel}, ${birthDate}, ${ttiLabel}`, "user");
 
       chatLoading = true;
       sajuSubmitBtn.disabled = true;
       applySajuBtn.disabled = true;
-      const loadingBubble = appendChatBubble("사주를 분석하고 번호를 추천하는 중…", "bot loading");
+      const loadingEmoji = (TTI_META[tti] || {}).emoji || "🔮";
+      const loadingBubble = appendChatBubble(`${loadingEmoji} 사주와 ${ttiLabel}를 분석하는 중…`, "bot loading");
 
       try {
         const res = await fetch("/api/saju-recommend", {
@@ -1641,8 +1929,12 @@
           return;
         }
 
-        lastSajuResult = data;
-        appendChatHtml(renderSajuResult(data), "bot");
+        lastSajuResult = { ...data, tti };
+        appendChatHtml(
+          renderSajuResult(data, tti, { gender, birthDate }),
+          "bot",
+          "saju-card-wrap"
+        );
         applySajuBtn.disabled = false;
       } catch (err) {
         loadingBubble.remove();
