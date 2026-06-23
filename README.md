@@ -1,20 +1,21 @@
 # 로또 추첨기 (Lotto Picker)
 
-한국 로또 6/45 규칙에 맞는 웹 기반 무작위 번호 생성기 + **사주 기반 AI 번호 추천** 챗봇입니다.
+한국 로또 6/45 규칙에 맞는 웹 기반 무작위 번호 생성기 + **사주·띠 기반 번호 추천** 챗봇입니다.
 
 ## 실행 방법
 
-### 로컬 (추첨기만)
+### 로컬
 
-`index.html` 파일을 브라우저에서 열면 추첨 기능을 사용할 수 있습니다.
+`index.html` 파일을 브라우저에서 열면 추첨 + 사주 추천을 모두 사용할 수 있습니다. **외부 API 키가 필요 없습니다.**
 
-### Vercel 배포 (사주 챗봇 포함)
+### Vercel 배포 (추첨 기록 Supabase 저장)
 
-사주 챗봇은 Gemini API를 서버에서 호출하므로 **Vercel 배포가 필요**합니다.
+추첨 기록 클라우드 저장만 Vercel + Supabase가 필요합니다.
 
 1. [Vercel](https://vercel.com)에 이 저장소를 Import
 2. **Settings → Environment Variables**에 추가:
-   - `GEMINI_API_KEY` = Google AI Studio에서 발급한 API 키
+   - `SUPABASE_URL`
+   - `SUPABASE_SERVICE_ROLE_KEY` (권장)
 3. Deploy
 
 로컬에서 API 테스트:
@@ -27,9 +28,9 @@ vercel dev
 ## 기능
 
 - **추첨기**: TV 방송 스타일 6/45 추첨 애니메이션
-- **사주 챗봇**: 성별·생년월일·띠 입력 → Gemini 2.5 Flash가 사주·띠 기반 번호 추천 및 근거 설명
+- **사주 챗봇**: 성별·생년월일·띠 입력 → 오행·일간·띠 기반 번호 추천 및 근거 설명 (브라우저에서 즉시 실행, API 키 불필요)
 - **추첨 기록**: Supabase 클라우드 저장 + 불러오기
-- **추첨기에 적용**: AI 추천 번호를 당첨번호판에 바로 반영
+- **추첨기에 적용**: 추천 번호를 당첨번호판에 바로 반영
 - HP 디자인 시스템 (`DESIGN.md`) UI
 
 ## Supabase 설정 (추첨 기록 저장)
@@ -69,7 +70,7 @@ vercel dev
 | GET | `/api/lotto-draws` | 저장된 추첨 기록 조회 |
 | POST | `/api/lotto-draws` | `{ numbers, bonus, include_bonus, source, tti }` 저장 |
 | DELETE | `/api/lotto-draws` | 전체 기록 삭제 |
-| POST | `/api/saju-recommend` | `{ gender, birthDate, tti }` 사주 번호 추천 |
+| POST | `/api/saju-recommend` | `{ gender, birthDate, tti }` 사주 번호 추천 (로컬 오행 엔진, API 키 불필요) |
 
 ## 저장소
 

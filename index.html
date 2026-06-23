@@ -1403,7 +1403,7 @@
     <section class="chat-section" aria-labelledby="saju-chat">
       <div class="chat-header">
         <h2>사주 로또 상담</h2>
-        <p>성별, 생년월일, 띠를 입력하면 Gemini AI가 사주와 띠를 바탕으로 번호를 추천하고, 선택 이유를 설명합니다.</p>
+        <p>성별, 생년월일, 띠를 입력하면 사주·오행·띠를 바탕으로 번호를 추천하고, 선택 이유를 설명합니다. (API 키 불필요)</p>
       </div>
 
       <form class="chat-form" id="sajuForm">
@@ -1458,6 +1458,7 @@
     <p>번호는 무작위로 생성되며, 실제 당첨과 무관합니다.</p>
   </footer>
 
+  <script src="saju-engine.js"></script>
   <script>
     const MIN = 1;
     const MAX = 45;
@@ -2141,20 +2142,9 @@
       const loadingBubble = appendChatBubble(`${loadingEmoji} 사주와 ${ttiLabel}를 분석하는 중…`, "bot loading");
 
       try {
-        const res = await fetch("/api/saju-recommend", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ gender, birthDate, tti }),
-        });
-
-        const data = await res.json();
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        const data = SajuEngine.recommendSaju({ gender, birthDate, tti });
         loadingBubble.remove();
-
-        if (!res.ok) {
-          appendChatBubble(data.error || data.detail || "추천 요청에 실패했습니다.", "bot error");
-          lastSajuResult = null;
-          return;
-        }
 
         lastSajuResult = { ...data, tti };
         appendChatHtml(
@@ -2165,10 +2155,7 @@
         applySajuBtn.disabled = false;
       } catch (err) {
         loadingBubble.remove();
-        appendChatBubble(
-          `서버에 연결할 수 없습니다. Vercel 배포 URL에서 접속했는지 확인해 주세요. (${err.message || "network error"})`,
-          "bot error"
-        );
+        appendChatBubble(err.message || "추천 처리에 실패했습니다.", "bot error");
         lastSajuResult = null;
       } finally {
         chatLoading = false;
