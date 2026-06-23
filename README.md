@@ -34,15 +34,33 @@ vercel dev
 
 ## Supabase 설정 (추첨 기록 저장)
 
-1. [Supabase](https://supabase.com)에서 프로젝트 생성
-2. **SQL Editor**에서 `supabase/schema.sql` 내용 실행 → `lotto_draws` 테이블 생성
-3. **Project Settings → API**에서 URL과 **service_role** 키 복사
-4. Vercel 환경 변수 추가:
-   - `SUPABASE_URL`
-   - `SUPABASE_SERVICE_ROLE_KEY` (권장) 또는 `SUPABASE_ANON_KEY`
-5. Redeploy
+### 어떤 키를 쓸까?
 
-추첨·사주 추천 번호가 Supabase `lotto_draws` 테이블에 자동 저장되며, 페이지 로드 시 불러옵니다.
+| 키 | Vercel에 넣을까? | 설명 |
+|----|----------------|------|
+| **service_role** | **권장** | 서버(Vercel API) 전용. RLS 무시 → 설정이 단순하고 저장이 잘 됨 |
+| **anon** | 가능 | `schema.sql` RLS 정책 필수. 정책 누락 시 저장 실패 |
+
+**결론: Vercel에는 `SUPABASE_SERVICE_ROLE_KEY`를 넣으세요.**  
+(service_role secret은 절대 프론트엔드/브라우저에 노출하지 마세요.)
+
+### 설정 순서
+
+1. [Supabase](https://supabase.com) → 프로젝트 생성
+2. **SQL Editor** → `supabase/schema.sql` 전체 실행
+3. **Project Settings → API**에서 복사:
+   - **Project URL** → Vercel `SUPABASE_URL`
+   - **service_role** (secret) → Vercel `SUPABASE_SERVICE_ROLE_KEY`
+4. Vercel **Redeploy** (환경 변수 추가 후 반드시 재배포)
+5. 확인: `https://your-site.vercel.app/api/lotto-draws?health=1`  
+   → `{ "ok": true, "keyType": "service_role" }` 이면 정상
+
+### 자주 하는 실수
+
+- anon 키만 넣고 SQL(RLS 정책) 안 돌림 → 저장 401/403
+- 환경 변수 추가 후 **Redeploy 안 함** → API가 옛 설정 사용
+- `lotto_draws` 테이블 미생성 → 404 / relation does not exist
+- service_role을 `SUPABASE_ANON_KEY` 변수에 넣음 → 변수 **이름**이 정확해야 함
 
 ## API
 

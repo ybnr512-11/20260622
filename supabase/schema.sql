@@ -16,20 +16,18 @@ create table if not exists public.lotto_draws (
 create index if not exists lotto_draws_created_at_idx
   on public.lotto_draws (created_at desc);
 
-comment on table public.lotto_draws is '로또 6/45 추첨 및 사주 추천 기록';
-
--- API(Vercel + service role)만 사용할 경우 RLS는 켜두어도 service role이 bypass합니다.
 alter table public.lotto_draws enable row level security;
 
--- anon 키로 클라이언트 직접 접근 시를 위한 정책 (선택). API만 쓸 경우 생략 가능.
+-- anon 키 사용 시 필요 (service_role은 RLS 우회)
+drop policy if exists "Allow public read lotto_draws" on public.lotto_draws;
+drop policy if exists "Allow public insert lotto_draws" on public.lotto_draws;
+drop policy if exists "Allow public delete lotto_draws" on public.lotto_draws;
+
 create policy "Allow public read lotto_draws"
-  on public.lotto_draws for select
-  using (true);
+  on public.lotto_draws for select using (true);
 
 create policy "Allow public insert lotto_draws"
-  on public.lotto_draws for insert
-  with check (true);
+  on public.lotto_draws for insert with check (true);
 
 create policy "Allow public delete lotto_draws"
-  on public.lotto_draws for delete
-  using (true);
+  on public.lotto_draws for delete using (true);

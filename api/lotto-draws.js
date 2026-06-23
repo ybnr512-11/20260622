@@ -1,9 +1,23 @@
 function getSupabaseConfig() {
   const url = process.env.SUPABASE_URL;
-  const key =
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const anonKey = process.env.SUPABASE_ANON_KEY;
+  const key = serviceKey || anonKey;
   if (!url || !key) return null;
-  return { url: url.replace(/\/$/, ""), key };
+  return {
+    url: url.replace(/\/$/, ""),
+    key,
+    keyType: serviceKey ? "service_role" : "anon",
+  };
+}
+
+function parseSupabaseError(status, errText) {
+  try {
+    const json = JSON.parse(errText);
+    return json.message || json.error || json.hint || errText;
+  } catch {
+    return errText || `HTTP ${status}`;
+  }
 }
 
 function supabaseHeaders(key, extra = {}) {
@@ -56,12 +70,24 @@ module.exports = async function handler(req, res) {
   if (!config) {
     return res.status(500).json({
       error:
-        "Supabase가 설정되지 않았습니다. SUPABASE_URL과 SUPABASE_SERVICE_ROLE_KEY(또는 SUPABASE_ANON_KEY)를 Vercel 환경 변수에 추가하세요.",
+        "Supabase 환경 변수가 없습니다. Vercel에 SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY(권장)를 추가하고 Redeploy 하세요.",
+      hint: "service_role 키는 Project Settings → API → service_role secret 입니다.",
     });
   }
 
-  const { url, key } = config;
+  const { url, key, keyType } = config;
   const tableUrl = `${url}/rest/v1/lotto_draws`;
+
+  if (req.method === "GET" && req.query?.health === "1") {
+    return res.status(200).json({
+      ok: true,
+      keyType,
+      message:
+        keyType === "service_role"
+          ? "service_role 키 사용 중 (권장)"
+          : "anon 키 사용 중 — schema.sql RLS 정책이 필요합니다",
+    });
+  }
 
   if (req.method === "GET") {
     try {
@@ -72,7 +98,17 @@ module.exports = async function handler(req, res) {
       if (!resFetch.ok) {
         const err = await resFetch.text();
         console.error("Supabase GET error:", resFetch.status, err);
-        return res.status(502).json({ error: "기록 불러오기에 실패했습니다." });
+        const detail = parseSupabaseError(resFetch.status, err);
+        return res.status(502).json({
+          error: "기록 불러오기에 실패했습니다.",
+          detail,
+          hint:
+            resFetch.status === 404
+              ? "lotto_draws 테이블이 없습니다. Supabase SQL Editor에서 supabase/schema.sql을 실행하세요."
+              : keyType === "anon"
+                ? "anon 키 사용 시 RLS 정책이 필요합니다. service_role 키 사용을 권장합니다."
+                : undefined,
+        });
       }
       const rows = await resFetch.json();
       return res.status(200).json({ draws: rows });
@@ -108,7 +144,17 @@ module.exports = async function handler(req, res) {
       if (!resFetch.ok) {
         const err = await resFetch.text();
         console.error("Supabase POST error:", resFetch.status, err);
-        return res.status(502).json({ error: "기록 저장에 실패했습니다." });
+        const detail = parseSupabaseError(resFetch.status, err);
+        return res.status(502).json({
+          error: "기록 저장에 실패했습니다.",
+          detail,
+          hint:
+            resFetch.status === 404
+              ? "lotto_draws 테이블이 없습니다. Supabase SQL Editor에서 supabase/schema.sql을 실행하세요."
+              : keyType === "anon" && resFetch.status === 401
+                ? "anon 키 권한 부족. SUPABASE_SERVICE_ROLE_KEY로 교체하세요."
+                : undefined,
+        });
       }
       const [row] = await resFetch.json();
       return res.status(201).json({ draw: row });
