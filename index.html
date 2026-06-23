@@ -685,6 +685,8 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: var(--spacing-md);
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     .history-header h2 {
@@ -733,12 +735,48 @@
 
     .history-item {
       display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 6px;
+      flex-direction: column;
+      gap: 8px;
       padding: var(--spacing-md) 0;
       border-bottom: 1px solid var(--hairline);
     }
+
+    .history-item-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .history-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 0.03em;
+    }
+
+    .history-date {
+      font-size: 11px;
+      color: var(--graphite);
+    }
+
+    .history-item-balls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .history-sync {
+      font-size: 11px;
+      color: var(--graphite);
+      font-weight: 500;
+    }
+
+    .history-sync.ok { color: #2e7d32; }
+    .history-sync.warn { color: #ef6c00; }
+    .history-sync.err { color: #b3262b; }
 
     .history-item:last-child { border-bottom: none; }
 
@@ -1333,6 +1371,7 @@
     <section class="history">
       <div class="history-header">
         <h2>추첨 기록</h2>
+        <span class="history-sync" id="historySync">기록 불러오는 중…</span>
         <button class="history-clear" id="clearHistory">전체 삭제</button>
       </div>
       <ul class="history-list" id="historyList"></ul>
@@ -1403,6 +1442,27 @@
     const MAX = 45;
     const PICK = 6;
 
+    const TTI_LABELS = {
+      rat: "쥐띠", ox: "소띠", tiger: "호랑이띠", rabbit: "토끼띠",
+      dragon: "용띠", snake: "뱀띠", horse: "말띠", goat: "양띠",
+      monkey: "원숭이띠", rooster: "닭띠", dog: "개띠", pig: "돼지띠",
+    };
+
+    const TTI_META = {
+      rat:     { emoji: "🐭", element: "水", hanja: "子" },
+      ox:      { emoji: "🐮", element: "土", hanja: "丑" },
+      tiger:   { emoji: "🐯", element: "木", hanja: "寅" },
+      rabbit:  { emoji: "🐰", element: "木", hanja: "卯" },
+      dragon:  { emoji: "🐲", element: "土", hanja: "辰" },
+      snake:   { emoji: "🐍", element: "火", hanja: "巳" },
+      horse:   { emoji: "🐴", element: "火", hanja: "午" },
+      goat:    { emoji: "🐏", element: "土", hanja: "未" },
+      monkey:  { emoji: "🐵", element: "金", hanja: "申" },
+      rooster: { emoji: "🐔", element: "金", hanja: "酉" },
+      dog:     { emoji: "🐶", element: "土", hanja: "戌" },
+      pig:     { emoji: "🐷", element: "水", hanja: "亥" },
+    };
+
     const drumEl = document.getElementById("drum");
     const drumBallsEl = document.getElementById("drumBalls");
     const chuteBallEl = document.getElementById("chuteBall");
@@ -1417,6 +1477,7 @@
     const gameCountEl = document.getElementById("gameCount");
     const historyListEl = document.getElementById("historyList");
     const clearHistoryBtn = document.getElementById("clearHistory");
+    const historySyncEl = document.getElementById("historySync");
 
     let isDrawing = false;
     let chuteInterval = null;
@@ -1528,16 +1589,130 @@
       drumEl.classList.remove("mixing");
     }
 
-    function addToHistory(result) {
+    function formatDrawDate(iso) {
+      if (!iso) return "";
+      return new Date(iso).toLocaleString("ko-KR", {
+        month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
+      });
+    }
+
+    function setHistorySyncStatus(status, message) {
+      if (!historySyncEl) return;
+      historySyncEl.className = "history-sync";
+      if (status === "loading") {
+        historySyncEl.textContent = "☁️ 불러오는 중…";
+      } else if (status === "saved") {
+        historySyncEl.classList.add("ok");
+        historySyncEl.textContent = "☁️ Supabase 저장됨";
+      } else if (status === "offline") {
+        historySyncEl.classList.add("warn");
+        historySyncEl.textContent = "⚠️ 로컬만 표시 (Supabase 미연결)";
+      } else if (status === "error") {
+        historySyncEl.classList.add("err");
+        historySyncEl.textContent = message || "저장 실패";
+      }
+    }
+
+    function updateHistoryEmptyState() {
+      const existing = document.getElementById("historyEmpty");
+      if (existing) existing.remove();
+      if (historyListEl.children.length === 0) {
+        const empty = document.createElement("li");
+        empty.id = "historyEmpty";
+        empty.className = "history-empty-msg";
+        empty.textContent = "아직 추첨 기록이 없습니다";
+        empty.style.cssText = "text-align:center;color:var(--graphite);font-size:14px;padding:1rem 0;list-style:none;border:none;";
+        historyListEl.appendChild(empty);
+      }
+    }
+
+    function renderHistoryItem(result, meta = {}) {
       const li = document.createElement("li");
       li.className = "history-item";
-      result.main.forEach(n => li.appendChild(createBallEl(n, true)));
-      if (includeBonusEl.checked) {
+      if (meta.id) li.dataset.id = meta.id;
+
+      const head = document.createElement("div");
+      head.className = "history-item-meta";
+      const badgeLabel = meta.source === "saju" ? "✨ 사주" : "🎱 추첨";
+      const ttiPart = meta.tti && TTI_LABELS[meta.tti]
+        ? ` · ${(TTI_META[meta.tti] || {}).emoji || ""}${TTI_LABELS[meta.tti]}`
+        : "";
+      head.innerHTML = `<span class="history-badge">${badgeLabel}${ttiPart}</span><time class="history-date">${formatDrawDate(meta.created_at || new Date().toISOString())}</time>`;
+      li.appendChild(head);
+
+      const ballsWrap = document.createElement("div");
+      ballsWrap.className = "history-item-balls";
+      result.main.forEach(n => ballsWrap.appendChild(createBallEl(n, true)));
+      const showBonus = meta.include_bonus !== false && result.bonus != null;
+      if (showBonus) {
         const bonus = createBallEl(result.bonus, true);
         bonus.classList.add("bonus-mini");
-        li.appendChild(bonus);
+        ballsWrap.appendChild(bonus);
       }
+      li.appendChild(ballsWrap);
+      return li;
+    }
+
+    async function saveDraw(result, meta = {}) {
+      const includeBonus = meta.include_bonus ?? includeBonusEl.checked;
+      const li = renderHistoryItem(result, {
+        ...meta,
+        created_at: new Date().toISOString(),
+        include_bonus: includeBonus,
+      });
+      const empty = document.getElementById("historyEmpty");
+      if (empty) empty.remove();
       historyListEl.prepend(li);
+
+      try {
+        const res = await fetch("/api/lotto-draws", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            numbers: result.main,
+            bonus: result.bonus,
+            include_bonus: includeBonus,
+            source: meta.source || "draw",
+            tti: meta.tti || null,
+          }),
+        });
+        const data = await res.json();
+        if (res.ok && data.draw) {
+          li.dataset.id = data.draw.id;
+          setHistorySyncStatus("saved");
+        } else {
+          setHistorySyncStatus("error", data.error);
+        }
+      } catch {
+        setHistorySyncStatus("offline");
+      }
+    }
+
+    async function loadHistory() {
+      setHistorySyncStatus("loading");
+      try {
+        const res = await fetch("/api/lotto-draws");
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        historyListEl.innerHTML = "";
+        (data.draws || []).forEach(row => {
+          historyListEl.appendChild(renderHistoryItem(
+            { main: row.numbers, bonus: row.bonus },
+            {
+              id: row.id,
+              created_at: row.created_at,
+              source: row.source,
+              tti: row.tti,
+              include_bonus: row.include_bonus,
+            }
+          ));
+        });
+        updateHistoryEmptyState();
+        setHistorySyncStatus("saved");
+      } catch {
+        setHistorySyncStatus("offline");
+        updateHistoryEmptyState();
+      }
     }
 
     function renderInstant(result) {
@@ -1647,7 +1822,7 @@
       }
 
       setStatus("추첨 완료", false);
-      addToHistory(result);
+      await saveDraw(result, { source: "draw" });
       isDrawing = false;
       setControlsDisabled(false);
     }
@@ -1663,7 +1838,7 @@
           await animateDraw(result);
         } else {
           renderInstant(result);
-          addToHistory(result);
+          await saveDraw(result, { source: "draw" });
         }
         return;
       }
@@ -1679,9 +1854,9 @@
           setControlsDisabled(false);
         } else if (g === 0) {
           renderInstant(result);
-          addToHistory(result);
+          await saveDraw(result, { source: "draw" });
         } else {
-          addToHistory(result);
+          await saveDraw(result, { source: "draw" });
           await sleep(animated ? 200 : 0);
         }
       }
@@ -1693,9 +1868,25 @@
     drawBtn.addEventListener("click", () => runDraw(true));
     quickBtn.addEventListener("click", () => runDraw(false));
 
-    clearHistoryBtn.addEventListener("click", () => {
+    clearHistoryBtn.addEventListener("click", async () => {
+      if (!confirm("저장된 추첨 기록을 모두 삭제할까요?")) return;
+      try {
+        const res = await fetch("/api/lotto-draws", { method: "DELETE" });
+        if (!res.ok) {
+          const data = await res.json();
+          alert(data.error || "삭제에 실패했습니다.");
+          return;
+        }
+      } catch {
+        alert("Supabase에 연결할 수 없습니다.");
+        return;
+      }
       historyListEl.innerHTML = "";
+      updateHistoryEmptyState();
+      setHistorySyncStatus("saved");
     });
+
+    loadHistory();
 
     // --- Saju chatbot ---
     const sajuForm = document.getElementById("sajuForm");
@@ -1711,36 +1902,6 @@
     let lastSajuResult = null;
     let chatLoading = false;
     let ttiManual = false;
-
-    const TTI_LABELS = {
-      rat: "쥐띠",
-      ox: "소띠",
-      tiger: "호랑이띠",
-      rabbit: "토끼띠",
-      dragon: "용띠",
-      snake: "뱀띠",
-      horse: "말띠",
-      goat: "양띠",
-      monkey: "원숭이띠",
-      rooster: "닭띠",
-      dog: "개띠",
-      pig: "돼지띠",
-    };
-
-    const TTI_META = {
-      rat:     { emoji: "🐭", element: "水", hanja: "子" },
-      ox:      { emoji: "🐮", element: "土", hanja: "丑" },
-      tiger:   { emoji: "🐯", element: "木", hanja: "寅" },
-      rabbit:  { emoji: "🐰", element: "木", hanja: "卯" },
-      dragon:  { emoji: "🐲", element: "土", hanja: "辰" },
-      snake:   { emoji: "🐍", element: "火", hanja: "巳" },
-      horse:   { emoji: "🐴", element: "火", hanja: "午" },
-      goat:    { emoji: "🐏", element: "土", hanja: "未" },
-      monkey:  { emoji: "🐵", element: "金", hanja: "申" },
-      rooster: { emoji: "🐔", element: "金", hanja: "酉" },
-      dog:     { emoji: "🐶", element: "土", hanja: "戌" },
-      pig:     { emoji: "🐷", element: "水", hanja: "亥" },
-    };
 
     const TTI_ORDER = [
       "rat", "ox", "tiger", "rabbit", "dragon", "snake",
@@ -1874,7 +2035,7 @@
       );
     }
 
-    function applySajuToDrawBoard(result) {
+    async function applySajuToDrawBoard(result) {
       stopMixing();
       setStatus("사주 추천 번호", false);
       getSlots().forEach((slot, i) => {
@@ -1889,7 +2050,10 @@
         bonusBallEl.textContent = result.bonus;
         bonusSlotEl.querySelector(".slot-ring").style.opacity = "0";
       }
-      addToHistory({ main: result.numbers, bonus: result.bonus });
+      await saveDraw(
+        { main: result.numbers, bonus: result.bonus },
+        { source: "saju", tti: result.tti, include_bonus: includeBonusEl.checked }
+      );
       document.getElementById("draw").scrollIntoView({ behavior: "smooth" });
     }
 

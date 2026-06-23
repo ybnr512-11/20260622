@@ -28,14 +28,29 @@ vercel dev
 
 - **추첨기**: TV 방송 스타일 6/45 추첨 애니메이션
 - **사주 챗봇**: 성별·생년월일·띠 입력 → Gemini 2.5 Flash가 사주·띠 기반 번호 추천 및 근거 설명
-- **추첨기에 적용**: AI 추천 번호를 당첨번호판에 바로 반영
+- **추첨 기록**: Supabase 클라우드 저장 + 불러오기
 - HP 디자인 시스템 (`DESIGN.md`) UI
+
+## Supabase 설정 (추첨 기록 저장)
+
+1. [Supabase](https://supabase.com)에서 프로젝트 생성
+2. **SQL Editor**에서 `supabase/schema.sql` 내용 실행 → `lotto_draws` 테이블 생성
+3. **Project Settings → API**에서 URL과 **service_role** 키 복사
+4. Vercel 환경 변수 추가:
+   - `SUPABASE_URL`
+   - `SUPABASE_SERVICE_ROLE_KEY` (권장) 또는 `SUPABASE_ANON_KEY`
+5. Redeploy
+
+추첨·사주 추천 번호가 Supabase `lotto_draws` 테이블에 자동 저장되며, 페이지 로드 시 불러옵니다.
 
 ## API
 
-| Method | Path | Body |
+| Method | Path | 설명 |
 |--------|------|------|
-| POST | `/api/saju-recommend` | `{ "gender": "male"\|"female", "birthDate": "YYYY-MM-DD", "tti": "dragon" }` |
+| GET | `/api/lotto-draws` | 저장된 추첨 기록 조회 |
+| POST | `/api/lotto-draws` | `{ numbers, bonus, include_bonus, source, tti }` 저장 |
+| DELETE | `/api/lotto-draws` | 전체 기록 삭제 |
+| POST | `/api/saju-recommend` | `{ gender, birthDate, tti }` 사주 번호 추천 |
 
 ## 저장소
 
