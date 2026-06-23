@@ -18,6 +18,12 @@
    - `SUPABASE_SERVICE_ROLE_KEY` (권장)
 3. Deploy
 
+**올바른 배포 URL:** `https://20260622-mu.vercel.app`  
+(`https://20260622.vercel.app` 은 다른(옛) 프로젝트라 `/api/*` 가 404입니다.)
+
+확인: `https://20260622-mu.vercel.app/api/lotto-draws?health=1`  
+→ `{ "ok": true, "keyType": "service_role" }` 이면 정상
+
 로컬에서 API 테스트:
 
 ```bash
