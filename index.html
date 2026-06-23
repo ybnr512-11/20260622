@@ -62,6 +62,21 @@
       line-height: 1.5;
     }
 
+    .deploy-alert {
+      background: #b3262b;
+      color: #fff;
+      padding: 12px var(--spacing-xl);
+      font-size: 13px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .deploy-alert code {
+      background: rgba(255,255,255,0.15);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
     /* nav-bar-top */
     .nav-bar {
       background: var(--canvas);
@@ -1280,6 +1295,12 @@
 <body>
   <div class="utility-strip">로또 6/45 · 무작위 번호 생성기</div>
 
+  <div class="deploy-alert" id="deployAlert" hidden>
+    <strong>배포 문제 감지:</strong> API 서버가 없습니다. Vercel이 GitHub 저장소
+    <code>ybnr512-11/20260622</code>와 연결되어 있는지 확인하고 <strong>Redeploy</strong>하세요.
+    (현재 사이트는 GitHub 최신 코드가 아닐 수 있습니다)
+  </div>
+
   <nav class="nav-bar">
     <div class="nav-logo">Lotto <span>Picker</span></div>
     <div class="nav-links">
@@ -1606,11 +1627,43 @@
         historySyncEl.textContent = "☁️ Supabase 저장됨";
       } else if (status === "offline") {
         historySyncEl.classList.add("warn");
-        historySyncEl.textContent = "⚠️ 로컬만 표시 (Supabase 미연결)";
+        historySyncEl.textContent = "⚠️ API 연결 실패";
       } else if (status === "error") {
         historySyncEl.classList.add("err");
         historySyncEl.textContent = message || "저장 실패";
       }
+    }
+
+    function showDeployAlert() {
+      const el = document.getElementById("deployAlert");
+      if (el) el.hidden = false;
+    }
+
+    async function checkApiDeployment() {
+      try {
+        const res = await fetch("/api/lotto-draws?health=1");
+        if (res.status === 404) {
+          showDeployAlert();
+          setHistorySyncStatus("error", "API 미배포 (404)");
+          return false;
+        }
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          setHistorySyncStatus("error", data.error || "API 오류");
+          if (data.hint) console.warn("Supabase hint:", data.hint);
+          return false;
+        }
+        return true;
+      } catch {
+        setHistorySyncStatus("offline");
+        return false;
+      }
+    }
+
+    function formatApiError(res, data) {
+      const parts = [data.error, data.detail, data.hint].filter(Boolean);
+      if (parts.length) return parts.join(" · ");
+      return `HTTP ${res.status}`;
     }
 
     function updateHistoryEmptyState() {
@@ -1676,12 +1729,13 @@
             tti: meta.tti || null,
           }),
         });
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
         if (res.ok && data.draw) {
           li.dataset.id = data.draw.id;
           setHistorySyncStatus("saved");
         } else {
-          setHistorySyncStatus("error", data.error);
+          if (res.status === 404) showDeployAlert();
+          setHistorySyncStatus("error", formatApiError(res, data));
         }
       } catch {
         setHistorySyncStatus("offline");
@@ -1690,10 +1744,19 @@
 
     async function loadHistory() {
       setHistorySyncStatus("loading");
+      const apiOk = await checkApiDeployment();
+      if (!apiOk) {
+        updateHistoryEmptyState();
+        return;
+      }
       try {
         const res = await fetch("/api/lotto-draws");
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          setHistorySyncStatus("error", formatApiError(res, data));
+          updateHistoryEmptyState();
+          return;
+        }
         historyListEl.innerHTML = "";
         (data.draws || []).forEach(row => {
           historyListEl.appendChild(renderHistoryItem(

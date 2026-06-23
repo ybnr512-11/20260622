@@ -78,7 +78,12 @@ module.exports = async function handler(req, res) {
   const { url, key, keyType } = config;
   const tableUrl = `${url}/rest/v1/lotto_draws`;
 
-  if (req.method === "GET" && req.query?.health === "1") {
+  const reqUrl = req.url || "";
+  const healthCheck =
+    req.method === "GET" &&
+    (req.query?.health === "1" || reqUrl.includes("health=1"));
+
+  if (healthCheck) {
     return res.status(200).json({
       ok: true,
       keyType,
